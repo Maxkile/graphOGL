@@ -1,7 +1,13 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.13)
+project(test)
 
-project(mgraph)
+set(CMAKE_CXX_STANDARD 11)
 
-add_executable(mgraph main.cpp)
-
-install(TARGETS mgraph RUNTIME DESTINATION bin)
+set(GCC_COVERAGE_COMPILE_FLAGS "-Wall -Werror")
+set(CMAKE_CXX_FLAGS ${GCC_COVERAGE_COMPILE_FLAGS})
+set(OGflags -lGLEW -lglfw -lGL -lX11 -lpthread -lXrandr )
+find_package(glfw3 REQUIRED)
+find_package(GLEW REQUIRED)
+include_directories(${GLFW3_LIBRANIES},${GLEW_LIBRANIES})
+add_executable(test main.cpp functions.cpp functions.hpp)
+target_link_libraries(test ${OGflags} ${GLFW3_LIBRANIES} ${GLEW_LIBRANIES})
