@@ -36,8 +36,6 @@ int main()
     glfwGetFramebufferSize(window,&x,&y);//retrieve framebuffersize(in pixels) from window
     glViewport(0,0,x,y);//set viewport
 
-    glfwSetKeyCallback(window,callbacks::exit_callback);//register before loop and after windows definition
-
 
 //    //XYZ RGB XY(texture)
 //    GLfloat multiColorTriangle[] = {
@@ -73,11 +71,11 @@ int main()
 
     Shader shader1;
     ShaderProgram shaderProgram1;
-    shader1.readSourceToString("../shaders/vertex/vertexWithColor.glsl");
+    shader1.readSourceToString("../shaders/vertex/texture.glsl");
     shader1.compile(GL_VERTEX_SHADER);
     GLuint vertexShaderID1 = shader1.getCustomShaderID();//just an id, simply can copy it
 
-    shader1.readSourceToString("../shaders/fragment/multiColorFragment.glsl");
+    shader1.readSourceToString("../shaders/fragment/texture.glsl");
     shader1.compile(GL_FRAGMENT_SHADER);
     GLint fragmentShaderID1 = shader1.getCustomShaderID();
 
@@ -90,11 +88,11 @@ int main()
 
 //    Shader shader2;
 //    ShaderProgram shaderProgram2;
-//    shader2.readSourceToString("../shaders/vertex/vertex.glsl");
+//    shader2.readSourceToString("../shaders/vertex/base.glsl");
 //    shader2.compile(GL_VERTEX_SHADER);
 //    GLuint vertexShaderID2 = shader2.getCustomShaderID();//just an id, simply can copy it
 //
-//    shader2.readSourceToString("../shaders/fragment/fragment.glsl");
+//    shader2.readSourceToString("../shaders/fragment/base.glsl");
 //    shader2.compile(GL_FRAGMENT_SHADER);
 //    GLint fragmentShaderID2 = shader2.getCustomShaderID();
 //
@@ -147,17 +145,39 @@ int main()
      * Textures generating and binding
      */
 
-    GLuint textureID;
-    glGenTextures(1,&textureID);
-    glBindTexture(GL_TEXTURE_2D,textureID);
+    GLuint textureIDs[2];
+    glGenTextures(2,textureIDs);
+
+    //sand
+    glBindTexture(GL_TEXTURE_2D,textureIDs[0]);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
     int texWidth,texHeight;
     unsigned char* textureImage = SOIL_load_image("../resources/textures/stone.png",&texWidth,&texHeight,0,SOIL_LOAD_RGB);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texWidth, texHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, textureImage);
-    std::cout << SOIL_last_result()  << std::endl;
+    std::cerr << SOIL_last_result()  << std::endl;
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    SOIL_free_image_data(textureImage);
+    glBindTexture(GL_TEXTURE_2D, 0);//best practice
+
+    //stone
+    glBindTexture(GL_TEXTURE_2D,textureIDs[1]);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    textureImage = SOIL_load_image("../resources/textures/moss.png",&texWidth,&texHeight,0,SOIL_LOAD_RGB);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texWidth, texHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, textureImage);
+    std::cerr << SOIL_last_result()  << std::endl;
     glGenerateMipmap(GL_TEXTURE_2D);
 
     SOIL_free_image_data(textureImage);
@@ -165,18 +185,36 @@ int main()
 
 //    glPolygonMode(GL_BACK, GL_FILL);
 
+
+    glfwSetKeyCallback(window,callbacks::exit_callback);//register before loop and after windows definition
+//    glfwSetKeyCallback(window,callbacks::change_alpha_callback);//register before loop and after windows definition
+
     while(!glfwWindowShouldClose(window))
     {
         glfwPollEvents();//processing events from event queue
         glClearColor(0.2f,0.2f,0.2f,1.0f);//setting GL_COLOR_BUFFERED_BIT
         glClear(GL_COLOR_BUFFER_BIT);//use condition
 
+        GLuint uniformLocation;
 
 
         shaderProgram1.use();
         //using uniform vec4 in fragment shader
+        glActiveTexture(GL_TEXTURE0);//activate texture block(for primitive) 0
+        glBindTexture(GL_TEXTURE_2D,textureIDs[0]);//bind texture
+        uniformLocation = glGetUniformLocation(shaderProgram1.getShaderProgramID(),"textureBase");
+        glUniform1i(uniformLocation,0);//set position of texture block 0
 
-        glBindTexture(GL_TEXTURE_2D,textureID);
+        glActiveTexture(GL_TEXTURE1);//activate texture block(for primitive) 1
+        glBindTexture(GL_TEXTURE_2D,textureIDs[1]);//bind texture
+        uniformLocation = glGetUniformLocation(shaderProgram1.getShaderProgramID(),"textureSub");
+        glUniform1i(uniformLocation,1);//set position of texture block 1
+
+        //set mixing parameter
+//        uniformLocation = glGetUniformLocation(shaderProgram1.getShaderProgramID(),"alpha");
+//        glUniform1i(uniformLocation,callbacks::alpha);//set position of texture block 1
+
+
         glBindVertexArray(vertexArrayID);//bind
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
         glBindVertexArray(0);//unbind
