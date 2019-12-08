@@ -4,10 +4,21 @@
 
 #include "../include/Callbacks.hpp"
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
+void callbacks::exit_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
-    // Когда пользователь нажимает ESC, мы устанавливаем свойство WindowShouldClose в true,
-    // и приложение после этого закроется
     if(key == GLFW_KEY_ENTER && action == GLFW_PRESS)
+    {
         glfwSetWindowShouldClose(window, GL_TRUE);
+    }
+
+}
+
+void callbacks::fullscreen_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
+{
+//    m_window = glfwCreateWindow(width, height, m_caption.c_str(),
+//                                fullScreen ? m_monitor : NULL, m_window);
+//    if (key == GLFW_KEY_F12 && action == GLFW_PRESS)
+//    {
+//        glfwSetWindowSize(GLFW_MAXIMIZED)
+//    }
 }

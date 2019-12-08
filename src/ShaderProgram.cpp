@@ -13,22 +13,22 @@ ShaderProgram::ShaderProgram()
     }
     successfulLink = false;
     successfulUse = false;
-    shaderProgram = glCreateProgram();
+    shaderProgramID = glCreateProgram();
 }
 
 void ShaderProgram::link()
 {
-    glLinkProgram(shaderProgram);
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &successfulLink);
+    glLinkProgram(shaderProgramID);
+    glGetProgramiv(shaderProgramID, GL_LINK_STATUS, &successfulLink);
     if (successfulLink == GL_FALSE) {
-        glGetProgramInfoLog(shaderProgram, INFOSIZE, NULL, infoLog);
+        glGetProgramInfoLog(shaderProgramID, INFOSIZE, NULL, infoLog);
         std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
 }
 
 void ShaderProgram::use()
 {
-    glUseProgram(shaderProgram);
+    glUseProgram(shaderProgramID);
     successfulUse = GL_TRUE;
 }
 
@@ -40,6 +40,11 @@ GLint ShaderProgram::isLinked() const
 GLint ShaderProgram::isUsed() const
 {
     return successfulUse;
+}
+
+GLuint ShaderProgram::getShaderProgramID() const
+{
+    return shaderProgramID;
 }
 
 GLchar* ShaderProgram::getInfoLog()

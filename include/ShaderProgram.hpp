@@ -9,7 +9,7 @@
 
 class ShaderProgram {
 
-    GLuint shaderProgram;
+    GLuint shaderProgramID;
     GLchar infoLog[INFOSIZE];
 
     GLint successfulLink;
@@ -18,7 +18,7 @@ class ShaderProgram {
     template<typename T>
     void attachShaders(T& first)
     {
-        glAttachShader(shaderProgram,first);
+        glAttachShader(shaderProgramID,first);
     }
 
 public:
@@ -27,7 +27,7 @@ public:
     template <typename T, typename... Args>
     void attachShaders(T& first, Args& ...args)
     {
-        glAttachShader(shaderProgram,first);
+        glAttachShader(shaderProgramID,first);
         attachShaders(args...);
     }
 
@@ -38,6 +38,8 @@ public:
     GLint isLinked() const;
 
     GLint isUsed() const;
+
+    GLuint getShaderProgramID() const;
 
     GLchar* getInfoLog();
 
