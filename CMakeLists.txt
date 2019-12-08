@@ -8,6 +8,7 @@ set(CMAKE_CXX_FLAGS ${GCC_COVERAGE_COMPILE_FLAGS})
 set(OGflags -lGLEW -lglfw -lGL -lX11 -lpthread -lXrandr )
 find_package(glfw3 REQUIRED)
 find_package(GLEW REQUIRED)
-include_directories(${GLFW3_LIBRANIES},${GLEW_LIBRANIES})
+
 add_executable(test scene.cpp src/Callbacks.cpp src/ShaderProgram.cpp src/Shader.cpp)
-target_link_libraries(test ${OGflags} ${GLFW3_LIBRANIES} ${GLEW_LIBRANIES})
+target_link_libraries(test ${OGflags} ${GLFW3_LIBRANIES} ${GLEW_LIBRANIES} ${CMAKE_CURRENT_SOURCE_DIR}/lib/SOIL/libSOIL.so
+        ${CMAKE_CURRENT_SOURCE_DIR}/lib/SOIL/libSOIL.so.1 ${CMAKE_CURRENT_SOURCE_DIR}/lib/SOIL/libSOIL.so.1.07-20071110)#todo:change linking type for SOIL

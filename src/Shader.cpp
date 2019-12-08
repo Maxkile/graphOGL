@@ -47,12 +47,12 @@ GLint Shader::compile(GLint shaderType)
     {
         this->customShaderID = glCreateShader(shaderType);
 
-        glShaderSource(this->customShaderID,1,&shaderSources, NULL);//second is number of lines in shaders,third is string source code
+        glShaderSource(this->customShaderID,1,&shaderSources, nullptr);//second is number of lines in shaders,third is string source code
         glCompileShader(this->customShaderID);
         glGetShaderiv(this->customShaderID, GL_COMPILE_STATUS, &successfulCompile);
         if(successfulCompile == GL_FALSE)
         {
-            glGetShaderInfoLog(this->customShaderID, INFOSIZE, NULL, infoLog);
+            glGetShaderInfoLog(this->customShaderID, INFOSIZE, nullptr, infoLog);
             std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
         }
         return successfulCompile;
